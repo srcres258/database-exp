@@ -125,4 +125,52 @@ SELECT Student.Sno, Sname, Cname, Grade
 SELECT Student.Sno, Sname, Cname, Grade
     FROM Student, SC, Course
     WHERE Student.Sno = SC.Sno AND SC.Cno = Course.Cno AND SC.Cno = '2';
+-- 查询各门课程的课程号, 课程名称以及选课学生的学号
+SELECT Course.Cno, Course.Cname, SC.Sno FROM Course, SC;
+-- 查询选修了数据库系统原理课程的同学的学号和姓名和成绩
+SELECT SC.Sno, Student.Sname, SC.Grade
+    FROM SC, Student
+    WHERE SC.Sno = Student.Sno AND SC.Cno = (SELECT Cno FROM Course WHERE Cname = '数据库系统原理');
+
+-- 4. 嵌套查询
+
+-- (1) 由 In 引出的子查询
+-- 查询与 "刘晨" 在同一个系学习的学生
+SELECT Sno, Sname, Sdept FROM Student
+    WHERE Sdept IN (SELECT Sdept FROM Student WHERE Sname = '刘晨');
+
+-- (2) 由比较运算符引出的子查询
+-- 找出每个学生超过他选修课程平均成绩的课程号.
+SELECT Sno, Cno FROM SC x
+    WHERE Grade >= (SELECT AVG(Grade) FROM SC y
+        WHERE x.Sno = y.Sno);
+
+-- (3) 带修饰符的比较运算符引出的子查询
+-- 查询其他系中比计算机科学系所有学生年龄都小的学生姓名及年龄.
+SELECT Sname, Sage FROM Student
+    WHERE Sage < ALL (SELECT Sage FROM Student WHERE Sdept = 'CS')
+        AND Sdept <> 'CS';
+
+-- (4) 由 EXISTS 引出的子查询
+-- 查询所有选修了1号课程的学生姓名
+SELECT Sname FROM Student
+    WHERE EXISTS (SELECT * FROM SC WHERE Sno = Student.Sno AND Cno = '1');
+
+-- 5. 集合查询
+
+-- (1) 集合并
+-- 查询计算机科学系的学生及年龄不大于19岁的学生
+SELECT * FROM Student WHERE Sdept = 'CS' UNION
+    SELECT * FROM Student WHERE Sage <= 19;
+
+-- (2) 集合交
+-- 查询计算机科学系且年龄不大于19岁的学生
+SELECT * FROM Student WHERE Sdept = 'CS' INTERSECT
+    SELECT * FROM Student WHERE Sage <= 19;
+
+-- (3) 集合差
+-- 查询计算机科学系且年龄大于19岁的学生
+SELECT * FROM Student WHERE Sdept = 'CS' EXCEPT
+    SELECT * FROM Student WHERE Sage <= 19;
+
 -- TODO
