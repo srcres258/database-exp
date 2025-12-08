@@ -173,4 +173,3 @@ SELECT * FROM Student WHERE Sdept = 'CS' INTERSECT
 SELECT * FROM Student WHERE Sdept = 'CS' EXCEPT
     SELECT * FROM Student WHERE Sage <= 19;
 
--- TODO
